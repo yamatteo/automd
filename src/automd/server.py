@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any, Dict, List
 
 from mcp.server import Server
-from mcp import ServerSession, stdio_server
+from mcp import stdio_server
 from mcp.types import Tool, TextContent, CallToolResult
 
 from .commands import InitCommand, UpdateCommand
@@ -103,12 +103,20 @@ class AutoMDServer:
 
 async def main():
     """Main entry point for the MCP server"""
+    print("Starting AutoMD MCP server...")
+    print("Note: MCP servers use stdio transport, not network ports")
+    print("The server communicates via stdin/stdout with MCP clients")
     server_instance = AutoMDServer()
+    print("Server instance created")
     
     # Run the server with stdio transport
+    print("Setting up stdio transport...")
     async with stdio_server() as (read_stream, write_stream):
-        session = ServerSession(read_stream, write_stream)
-        await session.run(server_instance.server)
+        print("stdio transport established, waiting for MCP client connections...")
+        print("Server is ready to receive commands via stdio")
+        init_options = server_instance.server.create_initialization_options()
+        print("Initialization options created, starting server run loop...")
+        await server_instance.server.run(read_stream, write_stream, init_options)
 
 
 if __name__ == "__main__":
