@@ -3,7 +3,8 @@
 AutoMD package entry point for python -m automd
 """
 
+import asyncio
 from .server import main
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
